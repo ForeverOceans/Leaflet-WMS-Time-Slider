@@ -36,12 +36,12 @@ The Slider is initialized with the following options:
 * **range:** Boolean for determining if a range of time is desired rather than a single time value.
 
 ```javascript
-// Create a WMS layer with a known time dimension available 
+// Create a WMS layer with a known time dimension available
 var hurricane = L.tileLayer.wms('http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r-t.cgi', {
 	layers: 'nexrad-n0r-wmst',
 	transparent: true,
 	format: 'image/png',
-	time: '2005-08-29T00:00:00' 
+	time: '2005-08-29T00:00:00'
 }).addTo(Map);
 
 // Initialize the SliderControl with the WMS layer, a start time, an end time, and time step
