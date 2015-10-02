@@ -2,11 +2,10 @@ L.Control.SliderControl = L.Control.extend({
   options: {
     position: 'topright',
     layers: null,
-    maxValue: -1,
-    minValue: -1,
     startTime: moment(0),
     endTime: moment(0),
     timeStep: 3600,
+    timeStepValues: [],
     range: false,
     dateDisplayFormat: 'YYYY-MM-DDTHH:mm:ssZ'
   },
@@ -24,6 +23,14 @@ L.Control.SliderControl = L.Control.extend({
     if (options.startTime) this._final_time = moment(options.endTime);
     // assume timeStep is in seconds and turn into milliseconds
     if (options.timeStep) this.options.timeStep = this.options.timeStep * 1000;
+
+    // populate the values
+    if (!options.timeStepValues || options.timeStepValues.length === 0) {
+      var timesteps = Math.round((this._final_time - this._begin_time) / this.options.timeStep);
+      for (var i = 0; i < timesteps; ++i) {
+        this.options.timeStepValues.push(moment(this._begin_time).add(i * this.options.timeStep, 'ms'));
+      }
+    }
 
     // Check for multiple layers passed to SliderControl
     if (this.options.layers == null) {
@@ -120,26 +127,25 @@ L.Control.SliderControl = L.Control.extend({
 
   buildTimestamp: function(start, end) {
     var timestamps = [];
-    timestamps.push(moment(this._begin_time).add(start * this.options.timeStep, 'ms'));
+    timestamps.push(this.options.timeStepValues[start]);
 
     if (end) {
-      timestamps.push(moment(this._begin_time).add(end * this.options.timeStep, 'ms'));
+      timestamps.push(this.options.timeStepValues[end]);
     }
     return timestamps;
   },
 
   startSlider: function() {
     var me = this;
-    var timesteps = Math.round((me._final_time - me._begin_time) / me.options.timeStep);
-    console.dir(timesteps)
+
     $(me._slider).slider({
       range: me.options.range,
       min: 0,
-      max: timesteps,
+      max: me.options.timeStepValues.length,
       step: 1,
       slide: function(e, ui) {
         if (me.options.range) {
-          me.updateTimestamp(me.buildTimestampRange(ui.values[0], ui.values[1]));
+          me.updateTimestamp(me.buildTimestamp(ui.values[0], ui.values[1]));
         } else {
           me.updateTimestamp(me.buildTimestamp(ui.value));
         }
