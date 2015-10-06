@@ -20,18 +20,22 @@ L.Control.SliderControl = L.Control.extend({
 
     // Start and ending times are split into a number of slider positions based on number of milliseconds
     // requested to separate each position
-    if (options.startTime) this._begin_time = options.startTime.tz(this.options.timezone);
-    if (options.endTime) this._final_time = options.endTime.tz(this.options.timezone);
+    this._begin_time = options.startTime.tz(this.options.timezone);
+    this._final_time = options.endTime.tz(this.options.timezone);
 
     // assume timeStep is in seconds and turn into microseconds
-    if (options.timeStep) this.options.timeStep = this.options.timeStep * 1000;
+    this.options.timeStep = options.timeStep * 1000;
 
     // calculate timeStops
     if (!options.timeStops || options.timeStops.length == 0) {
-      var timesteps = Math.round((this._final_time - this._begin_time) / this.options.timeStep);
-      for (var i = 0; i < timesteps; i++) {
-        this.timeStops[i] = moment(this._begin_time).add(i*this.options.timeStep, 'ms').tz(this.options.timezone);
+      this.options.timeStops = [];
+      this.options.timeSteps = Math.ceil((this._final_time - this._begin_time) / this.options.timeStep);
+      for (var i = 0; i <= this.options.timeSteps; i++) {
+        this.options.timeStops.push(moment(this._begin_time).add(i*this.options.timeStep, 'ms').tz(this.options.timezone));
       }
+    } else {
+       this.options.timeStops = options.timeStops;
+       this.options.timeSteps = options.timeStops.length;
     }
 
     // Check for multiple layers passed to SliderControl
@@ -99,7 +103,7 @@ L.Control.SliderControl = L.Control.extend({
   updateLayer: function(timestamps) {
     // format time to ISO 8601
     var timestamp = moment.utc(timestamps[0]).format();
-    if (timestamps.lenght > 1) timestamp += '/' + moment.utc(timestamps[1]).format();
+    if (timestamps.length > 1) timestamp += '/' + moment.utc(timestamps[1]).format();
 
     if (this.multilayer == true) {
       for (var i = 0; i < this._layer.length; i++) {
@@ -126,9 +130,11 @@ L.Control.SliderControl = L.Control.extend({
   buildTimestamp: function(startIndex, endIndex) {
     var timestamps = [];
 
-    timestamps.push(this.timeStops[startIndex]);
-    if (endIndex) timestamps.push(this.timeStops[endIndex]);
 
+    timestamps.push(this.options.timeStops[startIndex]);
+    if (endIndex) timestamps.push(this.options.timeStops[endIndex]);
+
+    console.dir(this.options.timeStops[startIndex].format())
     return timestamps;
   },
 
@@ -138,7 +144,7 @@ L.Control.SliderControl = L.Control.extend({
     $(me._slider).slider({
       range: me.options.range,
       min: 0,
-      max: timesteps,
+      max: me.options.timeSteps,
       step: 1,
       slide: function(e, ui) {
         if (me.options.range) {
