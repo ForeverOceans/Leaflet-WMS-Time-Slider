@@ -20,11 +20,11 @@ L.Control.SliderControl = L.Control.extend({
 
     // Start and ending times are split into a number of slider positions based on number of milliseconds
     // requested to separate each position
-    this._begin_time = options.startTime.tz(this.options.timezone);
-    this._final_time = options.endTime.tz(this.options.timezone);
+    this._begin_time = this.options.startTime.tz(this.options.timezone);
+    this._final_time = this.options.endTime.tz(this.options.timezone);
 
     // assume timeStep is in seconds and turn into microseconds
-    this.options.timeStep = options.timeStep * 1000;
+    this.options.timeStep = this.options.timeStep * 1000;
 
     // calculate timeStops
     if (!options.timeStops || options.timeStops.length == 0) {
