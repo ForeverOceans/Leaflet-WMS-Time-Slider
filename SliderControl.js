@@ -103,8 +103,8 @@ L.Control.SliderControl = L.Control.extend({
 
   updateLayer: function(timestamps) {
     // format time to ISO 8601
-    var timestamp = moment(timestamps[0]).format(this.options.dateRequestFormat);
-    if (timestamps.length > 1) timestamp += '/' + moment(timestamps[1]).format(this.options.dateRequestFormat);
+    var timestamp = moment.utc(timestamps[0]).format(this.options.dateRequestFormat);
+    if (timestamps.length > 1) timestamp += '/' + moment.utc(timestamps[1]).format(this.options.dateRequestFormat);
 
     if (this.multilayer == true) {
       for (var i = 0; i < this._layer.length; i++) {
