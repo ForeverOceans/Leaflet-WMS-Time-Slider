@@ -82,12 +82,13 @@ L.Control.SliderControl = L.Control.extend({
 
     var sliderContainer = this.createSliderUI();
     // Prevent map panning/zooming while using the slider
-    $(sliderContainer).mousedown(function() {
+   
+    /*$(sliderContainer).mousedown(function() {
       map.dragging.disable();
     });
     $(document).mouseup(function() {
       map.dragging.enable();
-    });
+    });*/
 
     // Make sure a layer has been passed before creating a slider
     if (!this._layer) {
